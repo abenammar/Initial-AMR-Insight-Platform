@@ -1,1 +1,1 @@
-# Initial-AMR-Insight-Platform
+# Initial-Insight-Platform
