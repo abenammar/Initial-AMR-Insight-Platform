@@ -1,0 +1,40 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-amr}
+      POSTGRES_USER: ${POSTGRES_USER:-amr}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-amr_dev_password}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-amr} -d ${POSTGRES_DB:-amr}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  backend:
+    build: ./backend
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-amr}
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER:-amr}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:-amr_dev_password}
+      AMR_ADMIN_USERNAME: ${AMR_ADMIN_USERNAME:-admin}
+      AMR_ADMIN_PASSWORD: ${AMR_ADMIN_PASSWORD:-change-me-now}
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:
