@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: amr-config
+  namespace: amr-insight
+data:
+  SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/amr
+  SPRING_DATASOURCE_USERNAME: amr
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: amr-secrets
+  namespace: amr-insight
+type: Opaque
+stringData:
+  SPRING_DATASOURCE_PASSWORD: replace-me
+  AMR_ADMIN_USERNAME: admin
+  AMR_ADMIN_PASSWORD: replace-me
